@@ -133,3 +133,5 @@ dmypy.json
 
 # other samples
 samples
+
+.data/

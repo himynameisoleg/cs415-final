@@ -1,0 +1,13 @@
+services:
+    db:
+        image: mysql
+        container_name: movies-db-myslq
+        volumes:
+            - "./.data/db:/var/lib/mysql"
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: movies
+            MYSQL_USER: user
+            MYSQL_PASSWORD: root
+        ports:
+            - 3306:3306
