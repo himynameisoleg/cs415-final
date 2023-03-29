@@ -28,7 +28,7 @@ def ip():
     }   
     return jsonify(d)
 
-@app.route('/mysql')
+@app.route('/test-mysql-db-connection')
 def test_db_connection():
     try:
         # google sql cloud database -- ip whitelisting test for heroku app
