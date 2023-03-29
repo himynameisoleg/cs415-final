@@ -8,15 +8,19 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/index.html')
 def index():
-    return render_template('index.html', the_title='Tiger Home Page')
+    return render_template('index.html', the_title='Movies Database')
 
-@app.route('/symbol.html')
-def symbol():
-    return render_template('symbol.html', the_title='Tiger As Symbol')
+@app.route('/add_user.html')
+def add_user():
+    return render_template('add_user.html', the_title='Dashboard')
 
-@app.route('/myth.html')
-def myth():
-    return render_template('myth.html', the_title='Tiger in Myth and Legend')
+@app.route('/dashboard.html')
+def dashboard():
+    return render_template('dashboard.html', the_title='Dashboard')
+
+@app.route('/results.html')
+def results():
+    return render_template('results.html', the_title='Search Results')
 
 @app.route('/ip')
 def ip():

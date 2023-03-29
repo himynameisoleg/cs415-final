@@ -1,3 +1,10 @@
+To start locally with hot-reloading run:
+```
+flask run --debug
+```
+
+
+// TODO
 # Deploy Your Flask Project To Heroku
 
 This is an example repository that uses **Flask** and **Gunicorn** to deploy your project to Heroku. [Demo app link](https://flask-basic-example.herokuapp.com/)
