@@ -3,10 +3,10 @@
 from mysql.connector import connect
 
 cnx = connect(
-	host='35.238.34.27',
-	database='demo',
-	user='nivratti',
-	password='Rajendra4@@', 
+	host='localhost',
+	database='movies',
+	user='root',
+	password='root', 
 	port=3306
 )
 
