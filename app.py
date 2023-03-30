@@ -4,15 +4,22 @@ import socket
 
 app = Flask(__name__)
 
-# two decorators, same function
 @app.route('/')
 @app.route('/index.html')
 def index():
     return render_template('index.html', the_title='Movies Database')
 
-@app.route('/add_user.html')
-def add_user():
-    return render_template('add_user.html', the_title='Dashboard')
+@app.route('/signup.html')
+def signup():
+    return render_template('signup.html', the_title='Sign Up')
+
+@app.route('/login.html')
+def login():
+    return render_template('login.html', the_title='Log In')
+
+@app.route('/about.html')
+def about():
+    return render_template('about.html', the_title='About')
 
 @app.route('/dashboard.html')
 def dashboard():
@@ -35,7 +42,6 @@ def ip():
 @app.route('/mysql')
 def test_db_connection():
     try:
-        # google sql cloud database -- ip whitelisting test for heroku app
         from mysql.connector import connect
         cnx = connect(
             host='127.0.0.1',
@@ -56,4 +62,4 @@ def test_db_connection():
     return jsonify(d)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5001)

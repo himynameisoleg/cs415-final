@@ -1,29 +1,89 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>{{ the_title }}</title>
-  <link href="https://fonts.google.com/specimen/Open+Sans" rel="stylesheet">
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ the_title }}</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 
 <body>
+    <div class="site-container">
 
-<div id="container">
-	<nav id="nav">
-		<ul>
-			<li><a href="{{ url_for('index') }}">Home</a></li>
-			<li><a href="{{ url_for('add_user') }}">Add User</a></li>
-			<li><a href="{{ url_for('results') }}">Results</a></li>
-			<li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-		</ul>
-	</nav>
+        <nav class="navbar is-fixed has-shadow" role="navigation" aria-label="main navigation">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="{{ url_for('index') }}">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3163/3163508.png" width="28" height="28">
+                </a>
+                <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
+                    data-target="navbarBasicExample">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
+            </div>
+            <div id="navbarBasicExample" class="navbar-menu">
+                <div class="navbar-start">
+                    <a href="{{ url_for('index') }}" class="navbar-item">
+                        Home
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="navbar-item">
+                        Dashboard
+                    </a>
+                    <div class="navbar-item has-dropdown is-hoverable">
+                        <a class="navbar-link">
+                            More
+                        </a>
+                        <div class="navbar-dropdown">
+                            <a href="{{ url_for('about') }}" class="navbar-item">
+                                About
+                            </a>
+                            <a class="navbar-item">
+                                Contact
+                            </a>
+                            <hr class="navbar-divider">
+                            <a class="navbar-item">
+                                Report an issue
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="navbar-end">
+                    <div class="navbar-item">
+                        <div class="buttons">
+                            <a href="{{ url_for('signup') }}" class="button is-link">
+                                <strong>Sign up</strong>
+                            </a>
+                            <a href="{{ url_for('login') }}"" class="button is-light">
+                                Log in
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
 
-  	{% block body %}
-  	{% endblock %}
 
-</div>
+        <div class="container">
+
+            {% block body %}
+            {% endblock %}
+
+        </div>
+
+        <footer class="footer">
+            <div class="content has-text-centered">
+                <p>
+                    <strong>Movies Database</strong> by <a href="#">Thomas</a> and <a href="https://himynameisoleg.com" target="_blank">Oleg</a>. The source code is
+                    available at
+                    <a href="https://github.com/himynameisoleg/cs415-final" target="_blank">Github</a>.
+                </p>
+            </div>
+        </footer>
+    </div>
 
 </body>
+
 </html>
