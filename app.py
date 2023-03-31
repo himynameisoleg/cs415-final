@@ -13,9 +13,9 @@ def index():
 def signup():
     return render_template('signup.html', the_title='Sign Up')
 
-@app.route('/login.html')
-def login():
-    return render_template('login.html', the_title='Log In')
+@app.route('/loginpage.html')
+def loginpage():
+    return render_template('loginpage.html', the_title='Log In')
 
 @app.route('/about.html')
 def about():
