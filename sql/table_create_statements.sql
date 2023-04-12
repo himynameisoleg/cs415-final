@@ -27,18 +27,18 @@ CREATE TABLE Actors (
     Rating DECIMAL(2, 1) NULL
 );
 
-
 CREATE TABLE Users (
-    Username VARCHAR(255) NOT NULL,
-	Age INT NOT NULL,
+    UserID VARCHAR(255) NOT NULL,
+	Password VARCHAR(30) NOT NULL,
+    Age INT NOT NULL,
     City VARCHAR(30) NOT NULL,
-    PRIMARY KEY (Username)
+    PRIMARY KEY (UserID)
 );
 
 CREATE TABLE Favorites (
-    Username VARCHAR(255) NOT NULL,
+    UserID   VARCHAR(255) NOT NULL,
     Title VARCHAR(255) NOT NULL,
     Date_Added DATE NOT NULL,
-	FOREIGN KEY (Username) REFERENCES Users(Username),
+	FOREIGN KEY (UserID) REFERENCES Users(UserID),
     FOREIGN KEY (Title) REFERENCES Movies(Title)
 )

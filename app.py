@@ -1,65 +1,141 @@
-from flask import Flask, render_template
-from flask import jsonify
-import socket 
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask_mysqldb import MySQL
+import re
 
 app = Flask(__name__)
 
-@app.route('/')
+app.secret_key = 'secret'
+
+app.config['MYSQL_HOST'] = '127.0.0.1'
+app.config['MYSQL_PORT'] = 3306
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'root'
+app.config['MYSQL_DB'] = 'movies'
+# Extra configs, optional:
+app.config["MYSQL_CURSORCLASS"] = "DictCursor"
+# app.config["MYSQL_CUSTOM_OPTIONS"] = {"ssl": {"ca": "/path/to/ca-file"}}  # https://mysqlclient.readthedocs.io/user_guide.html#functions-and-attributes
+
+
+# Intialize MySQL
+mysql = MySQL(app)
+
 @app.route('/index.html')
 def index():
-    return render_template('index.html', the_title='Movies Database')
+    if session.get('loggedin'):
+        return render_template('index.html', the_title='Movies Database')
+    else:
+        return redirect(url_for('login'))
 
-@app.route('/signup.html')
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    msg = ''
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
+        # # Create variables for easy access
+        username = request.form['username']
+        password = request.form['password']
+
+        cursor = mysql.connection.cursor()
+
+        cursor.execute('SELECT * FROM Users WHERE UserID = %s AND Password = %s', (username, password,))
+        # Fetch one record and return result
+        account = cursor.fetchone()
+
+        # If account exists in accounts table in out database
+        if account:
+            # Create session data, we can access this data in other routes
+            session['loggedin'] = True
+            session['id'] = account['UserID']
+            session['username'] = account['UserID']
+            session['age'] = account['Age']
+            session['city'] = account['City']
+            # Redirect to home page
+            msg = 'Logged in successfully!'
+            return render_template('index.html', msg = msg, the_title='Login Successful!')
+        else:
+            # Account doesnt exist or username/password incorrect
+            msg = 'Maybe try "admin" and "password"?'
+
+    return render_template('login.html', msg=msg, the_title='Log In')
+@app.route('/logout')
+
+def logout():
+    session.pop('loggedin', None)
+    session.pop('id', None)
+    session.pop('username', None)
+    return redirect(url_for('login'))
+
+@app.route('/')
+@app.route('/signup', methods =['GET', 'POST'])
 def signup():
-    return render_template('signup.html', the_title='Sign Up')
+    msg = ''
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'age' in request.form and 'city' in request.form:
+        username = request.form['username']
+        password = request.form['password']
+        age = request.form['age']
+        city = request.form['city']
 
-@app.route('/loginpage.html')
-def loginpage():
-    return render_template('loginpage.html', the_title='Log In')
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM Users WHERE UserID = % s', (username, ))
+        account = cursor.fetchone()
+        if account:
+            msg = 'Account already exists !'
+        elif not re.match(r'[0-9]+', age):
+            msg = 'Invalid Age !'
+        elif not re.match(r'[A-Za-z0-9]+', username):
+            msg = 'Username must contain only characters and numbers !'
+        elif not re.match(r'[A-Za-z]+', city):
+            msg = 'City must contain only characters!'
+        elif not username or not password or not age or not city:
+            msg = 'Please fill out the form !'
+        else:
+            cursor.execute('INSERT INTO Users VALUES (% s, % s, % s, % s)', (username, password, age, city, ))
+            mysql.connection.commit()
 
-@app.route('/about.html')
+            session['loggedin'] = True
+            session['id'] = username
+            session['username'] = username
+            session['age'] = age
+            session['city'] = city
+
+            msg = 'You have successfully registered !'
+    elif request.method == 'POST':
+        msg = 'Please fill out the form !'
+    return render_template('signup.html', msg = msg, the_title='Sign Up')
+
+@app.route('/about')
 def about():
     return render_template('about.html', the_title='About')
 
-@app.route('/dashboard.html')
+@app.route('/dashboard')
 def dashboard():
     return render_template('dashboard.html', the_title='Dashboard')
 
-@app.route('/results.html')
+@app.route('/results')
 def results():
     return render_template('results.html', the_title='Search Results')
 
-@app.route('/ip')
-def ip():
-    hostname = socket.gethostname()    
-    IPAddr = socket.gethostbyname(hostname)
-    d = {
-        "hostname": hostname,
-        "IPAddr": IPAddr,
-    }   
-    return jsonify(d)
 
-@app.route('/mysql')
-def test_db_connection():
-    try:
-        from mysql.connector import connect
-        cnx = connect(
-            host='127.0.0.1',
-            database='movies',
-            user='root',
-            password='root', 
-            port=3306
-        )
-        d = {
-            "success": True,
-            "message": "Connected to database successfully",
-        }
-    except Exception as e:
-        d = {
-            "success": False,
-            "message": str(e),
-        }
-    return jsonify(d)
+# @app.route('/mysql')
+# def test_db_connection():
+    # try:
+    #     from mysql.connector import connect
+    #     cnx = connect(
+    #         host='127.0.0.1',
+    #         database='movies',
+    #         user='root',
+    #         password='root', 
+    #         port=3306
+    #     )
+    #     d = {
+    #         "success": True,
+    #         "message": "Connected to database successfully",
+    #     }
+    # except Exception as e:
+    #     d = {
+    #         "success": False,
+    #         "message": str(e),
+    #     }
+    # return jsonify(d)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

@@ -1,13 +1,39 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block body %}
+<div class="column is-4 is-offset-4">
+    <h3 class="title">Sign Up</h3>
+    <div class="box">
+        <form method="POST" action="/signup">
+            <div class="field">
+                <div class="control">
+                    <input class="input" type="text" name="username" placeholder="Username" autofocus="">
+                </div>
+            </div>
 
-<h1 class="title">{{ the_title }}</h1>
+            <div class="field">
+                <div class="control">
+                    <input class="input" type="password" name="password" placeholder="Password">
+                </div>
+            </div>
 
-<p>This is the Add User Page</p>
+            <div class="field">
+                <div class="control">
+                    <input class="input" type="number" name="age" placeholder="Age" autofocus="">
+                </div>
+            </div>
 
-<ul>
-    <li><a href="{{ url_for('index') }}">Home page</a></li>
-</ul>
+            <div class="field">
+                <div class="control">
+                    <input class="input" type="text" name="city" placeholder="City" autofocus="">
+                </div>
+            </div>
 
+            <p class="help is-danger">{{ msg }}</p>
+            <br/>
+
+            <button class="button is-block is-link is-large is-fullwidth">Sign Up</button>
+        </form>
+    </div>
+</div>
 {% endblock %}
