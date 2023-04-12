@@ -1,18 +1,57 @@
 {% extends 'base.html' %}
 
 {% block body %}
+<section class="hero is-link">
+    <div class="hero-body">
+        <p class="title">
+            Welcome
+        </p>
+        <p class="subtitle">
+            Check out the hottest movies below or <strong><a href="{{ url_for('search') }}">search</a></strong> for your
+            favorite movie!
+        </p>
+    </div>
+</section>
 
-<h1 class="title">{{ the_title }}</h1>
+<div class="container mt-4 mb-4">
+    <div class="columns is-multiline">
+        {% for movie in movies %}
+        <div class="column is-one-third">
+            <div class="card">
+                <div class="card-image">
+                    <!-- <figure class="image is-1by1">
+                <img src="{{ movie['Poster_Link'] }}" alt="Placeholder image">
+            </figure> -->
+                </div>
+                <div class="card-content">
+                    <div class="media">
+                        <div class="media-left">
+                            <figure class="image is-48x48">
+                                <img src="{{ movie['Poster_Link'] }}" alt="Placeholder image">
+                            </figure>
+                        </div>
+                        <div class="media-content">
+                            <p class="title is-4">{{ movie['Title'] }}</p>
+                            <p class="subtitle is-6">IMDB: {{ movie['IMDB_Rating'] }}</p>
+                        </div>
+                    </div>
 
-<img alt="Photo: Bengal Tiger" src="{{ url_for('static', filename='images/tiger.jpg') }}">
+                    <div class="content">
+                        <p>{{ movie['Overview'] }}</p>
 
-<p>This is the index page for my example Flask app.</p>
+                        <p>Released in <strong>{{ movie['Released_Year'] }}.</strong></p>
+                        <p>Directed by <strong>{{ movie['Director'] }}</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 
-<ul>
-    <!-- note how items from routes in the the Python script are linked -->
-    <li><a href="{{ url_for('signup') }}">Add New User</a></li>
-    <li><a href="{{ url_for('results') }}">Results</a></li>
-    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-</ul>
+</div>
+
+
+
+
 
 {% endblock %}

@@ -1,17 +1,21 @@
 {% extends 'base.html' %}
 
 {% block body %}
+<section class="hero is-light">
+    <div class="hero-body">
+      <p class="title">
+        About
+      </p>
+      <p class="subtitle">
+        Details about our project.
+      </p>
+    </div>
+  </section>
 
-<h1>{{ the_title }}</h1>
-
-<p>Placeholder for the dashboard page.</p>
-
-<img alt="Photo: Flag of Naam Tamilar" src="{{ url_for('static', filename='images/naam_tamilar_flag.jpg') }}">
-<p class="credit">Flag of the <a href="http://www.naamtamilar.org/" target="_blank">Naam Tamilar</a> political party,
-    India (2010)</p>
-
-<ul>
-    <li><a href="{{ url_for('index') }}">Home page</a></li>
-</ul>
+<div class="container mt-4 mb-4">
+<p class="">
+        Our proposed project is to build a movie database that allows users to search for a film by title, actor, director, genre, release year, total gross, runtime and its IMDB rating. This database, through its GUI, will allow users to search for films as part of a large table, or to filter their options with the available criteria. Users will also be able to create a personal profile where they can save selected films to favorites. This project requires a database so users can search and sort through large amounts of information (the films) and make selections based on their own criteria. We intend to develop our program using Python.
+      </p>
+</div>
 
 {% endblock %}

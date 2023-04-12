@@ -1,6 +1,6 @@
 CREATE TABLE Movies (
-    Title VARCHAR(255) NOT NULL,
     Poster_Link VARCHAR(255) NOT NULL,
+    Title VARCHAR(255) NOT NULL,
     Released_Year INT NOT NULL,
     Certificate VARCHAR(30) NULL,
     Runtime VARCHAR(30) NULL,

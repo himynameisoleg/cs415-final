@@ -22,10 +22,16 @@ mysql = MySQL(app)
 @app.route('/index.html')
 def index():
     if session.get('loggedin'):
-        return render_template('index.html', the_title='Movies Database')
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM Movies ORDER BY IMDB_Rating DESC LIMIT 10')
+        movies = cursor.fetchall()
+
+        return render_template('index.html', movies=movies, the_title='Welcome')
     else:
+        
         return redirect(url_for('login'))
 
+@app.route('/')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     msg = ''
@@ -50,12 +56,12 @@ def login():
             session['city'] = account['City']
             # Redirect to home page
             msg = 'Logged in successfully!'
-            return render_template('index.html', msg = msg, the_title='Login Successful!')
+            return render_template('index.html', msg = msg, the_title='Welcome')
         else:
             # Account doesnt exist or username/password incorrect
             msg = 'Maybe try "admin" and "password"?'
 
-    return render_template('login.html', msg=msg, the_title='Log In')
+    return render_template('login.html', msg=msg, the_title='Welcome')
 @app.route('/logout')
 
 def logout():
@@ -64,7 +70,6 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('login'))
 
-@app.route('/')
 @app.route('/signup', methods =['GET', 'POST'])
 def signup():
     msg = ''
@@ -98,6 +103,8 @@ def signup():
             session['city'] = city
 
             msg = 'You have successfully registered !'
+            return render_template('index.html', msg = msg, the_title='Welcome')
+            
     elif request.method == 'POST':
         msg = 'Please fill out the form !'
     return render_template('signup.html', msg = msg, the_title='Sign Up')
@@ -106,9 +113,9 @@ def signup():
 def about():
     return render_template('about.html', the_title='About')
 
-@app.route('/dashboard')
-def dashboard():
-    return render_template('dashboard.html', the_title='Dashboard')
+@app.route('/search')
+def search():
+    return render_template('search.html', the_title='Search')
 
 @app.route('/results')
 def results():
