@@ -23,12 +23,11 @@ mysql = MySQL(app)
 def index():
     if session.get('loggedin'):
         cursor = mysql.connection.cursor()
-        cursor.execute('SELECT * FROM Movies ORDER BY IMDB_Rating DESC LIMIT 10')
+        cursor.execute('SELECT * FROM Movies ORDER BY IMDB_Rating DESC LIMIT 12')
         movies = cursor.fetchall()
 
         return render_template('index.html', movies=movies, the_title='Welcome')
     else:
-        
         return redirect(url_for('login'))
 
 @app.route('/')

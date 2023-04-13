@@ -7,7 +7,7 @@ localhost:3306
 Run the individual table create scripts under:
 
 ```
-\sql\table_creeate_statements.sql
+\sql\table_create_statements.sql
 ```
 
 Import each dataset using the scripts under:
@@ -35,4 +35,4 @@ source venv/bin/activate
 flask run -p 5001 --debug
 ```
 
-To view the app, go to your browseer and access [localhost:5001](http://localhost:5001)
+To view the app, go to your browser and access [localhost:5001](http://localhost:5001)

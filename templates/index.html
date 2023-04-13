@@ -8,7 +8,8 @@
         </p>
         <p class="subtitle">
             Check out the hottest movies below, <strong><a href="{{ url_for('search') }}">search</a></strong> for your
-            favorite movie or <strong><a href="{{ url_for('recommendations') }}">get recommendations</a></strong> based on your favorite movies!
+            favorite movie or <strong><a href="{{ url_for('recommendations') }}">get recommendations</a></strong> based
+            on your favorite movies!
         </p>
     </div>
 </section>
@@ -18,12 +19,18 @@
         {% for movie in movies %}
         <div class="column is-one-third">
             <div class="card">
-                <div class="card-image">
-                    <!-- <figure class="image is-1by1">
-                <img src="{{ movie['Poster_Link'] }}" alt="Placeholder image">
-            </figure> -->
-                </div>
+                <!-- <div class="card-image">
+                    <figure class="image is-1by1">
+                        <img src="{{ movie['Poster_Link'] }}" alt="Placeholder image">
+                    </figure>
+                </div> -->
                 <div class="card-content">
+                    <div class="columns">
+                        <div class="column is-1 is-offset-10">
+                            <button class="button is-danger is-rounded is-small is-right"><strong>{{ loop.index }}</strong></button>
+                        </div>
+                    </div>
+
                     <div class="media">
                         <div class="media-left">
                             <figure class="image is-48x48">
@@ -39,7 +46,7 @@
                     <div class="content">
                         <p>{{ movie['Overview'] }}</p>
 
-                        <p>Released in <strong>{{ movie['Released_Year'] }}.</strong></p>
+                        <p>Released in <strong>{{ movie['Released_Year'] }}</strong></p>
                         <p>Directed by <strong>{{ movie['Director'] }}</strong></p>
                     </div>
                 </div>
