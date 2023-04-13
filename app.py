@@ -56,14 +56,13 @@ def login():
             session['city'] = account['City']
             # Redirect to home page
             msg = 'Logged in successfully!'
-            return render_template('index.html', msg = msg, the_title='Welcome')
+            return redirect(url_for('index'))
         else:
             # Account doesnt exist or username/password incorrect
             msg = 'Maybe try "admin" and "password"?'
 
     return render_template('login.html', msg=msg, the_title='Welcome')
 @app.route('/logout')
-
 def logout():
     session.pop('loggedin', None)
     session.pop('id', None)
@@ -103,7 +102,7 @@ def signup():
             session['city'] = city
 
             msg = 'You have successfully registered !'
-            return render_template('index.html', msg = msg, the_title='Welcome')
+            return redirect(url_for('index')) 
             
     elif request.method == 'POST':
         msg = 'Please fill out the form !'
@@ -117,32 +116,13 @@ def about():
 def search():
     return render_template('search.html', the_title='Search')
 
+@app.route('/recommendations')
+def recommendations():
+    return render_template('recommendations.html', the_title='Recommendations')
+
 @app.route('/results')
 def results():
     return render_template('results.html', the_title='Search Results')
-
-
-# @app.route('/mysql')
-# def test_db_connection():
-    # try:
-    #     from mysql.connector import connect
-    #     cnx = connect(
-    #         host='127.0.0.1',
-    #         database='movies',
-    #         user='root',
-    #         password='root', 
-    #         port=3306
-    #     )
-    #     d = {
-    #         "success": True,
-    #         "message": "Connected to database successfully",
-    #     }
-    # except Exception as e:
-    #     d = {
-    #         "success": False,
-    #         "message": str(e),
-    #     }
-    # return jsonify(d)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

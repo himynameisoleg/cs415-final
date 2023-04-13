@@ -1,3 +1,6 @@
+CREATE DATABASE movies;
+
+
 CREATE TABLE Movies (
     Poster_Link VARCHAR(255) NOT NULL,
     Title VARCHAR(255) NOT NULL,

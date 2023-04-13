@@ -33,6 +33,9 @@
                     <a href="{{ url_for('search') }}" class="navbar-item">
                         Search
                     </a>
+                    <a href="{{ url_for('recommendations') }}" class="navbar-item">
+                        Recommendations
+                    </a>
                     <div class="navbar-item has-dropdown is-hoverable">
                         <a class="navbar-link">
                             More
@@ -67,7 +70,7 @@
                             <a href="{{ url_for('signup') }}" class="button is-link">
                                 <strong>Sign up</strong>
                             </a>
-                            <a href="{{ url_for('login') }}"" class="button is-light">
+                            <a href="{{ url_for('login') }}"" class=" button is-light">
                                 Log in
                             </a>
                             {% endif %}
@@ -89,7 +92,8 @@
         <footer class="footer">
             <div class="content has-text-centered">
                 <p>
-                    <strong>Movies Database</strong> by <a href="#">Thomas</a> and <a href="https://himynameisoleg.com" target="_blank">Oleg</a>. The source code is
+                    <strong>Movies Database</strong> by <a href="#">Thomas</a> and <a href="https://himynameisoleg.com"
+                        target="_blank">Oleg</a>. The source code is
                     available at
                     <a href="https://github.com/himynameisoleg/cs415-final" target="_blank">Github</a>.
                 </p>
