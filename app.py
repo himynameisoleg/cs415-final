@@ -1,3 +1,4 @@
+import datetime
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_mysqldb import MySQL
 import re
@@ -15,22 +16,22 @@ app.config['MYSQL_DB'] = 'movies'
 app.config["MYSQL_CURSORCLASS"] = "DictCursor"
 # app.config["MYSQL_CUSTOM_OPTIONS"] = {"ssl": {"ca": "/path/to/ca-file"}}  # https://mysqlclient.readthedocs.io/user_guide.html#functions-and-attributes
 
-
 # Intialize MySQL
 mysql = MySQL(app)
 
-@app.route('/index.html')
+# Routes
+@app.route('/')
+@app.route('/index')
 def index():
     if session.get('loggedin'):
         cursor = mysql.connection.cursor()
-        cursor.execute('SELECT * FROM Movies ORDER BY IMDB_Rating DESC LIMIT 12')
+        cursor.execute('SELECT * FROM Movies ORDER BY IMDB_Rating DESC LIMIT 9')
         movies = cursor.fetchall()
 
         return render_template('index.html', movies=movies, the_title='Welcome')
     else:
         return redirect(url_for('login'))
 
-@app.route('/')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     msg = ''
@@ -48,11 +49,14 @@ def login():
         # If account exists in accounts table in out database
         if account:
             # Create session data, we can access this data in other routes
+            now = datetime.datetime.now()
+
             session['loggedin'] = True
             session['id'] = account['UserID']
             session['username'] = account['UserID']
             session['age'] = account['Age']
             session['city'] = account['City']
+            session['logged_in_at'] = now.strftime("%c")
             # Redirect to home page
             msg = 'Logged in successfully!'
             return redirect(url_for('index'))
@@ -61,6 +65,7 @@ def login():
             msg = 'Maybe try "admin" and "password"?'
 
     return render_template('login.html', msg=msg, the_title='Welcome')
+
 @app.route('/logout')
 def logout():
     session.pop('loggedin', None)
@@ -111,17 +116,95 @@ def signup():
 def about():
     return render_template('about.html', the_title='About')
 
-@app.route('/search')
+@app.route('/search', methods=['GET', 'POST'])
 def search():
-    return render_template('search.html', the_title='Search')
+    # search by movie, actor, gener
+    # filers: top grossing, length
+    # display all faves 
+    # distinct genres
+
+    msg = ''
+    if request.method == 'POST' and 'search-title' in request.form:
+        title = request.form['search-title']
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM Movies WHERE Title = % s', (title, ))
+        movies = cursor.fetchall()
+
+        return render_template('search.html', movies=movies)
+    
+    elif request.method == 'POST' and 'search-actor' in request.form:
+        actor = request.form['search-actor']
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM Actors WHERE Name = % s', (actor, ))
+        actors = cursor.fetchall()
+
+        return render_template('search.html', actors=actors)
+    
+    elif request.method == 'POST' and 'search-director' in request.form:
+        director = request.form['search-director']
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM Movies WHERE Director = % s', (director, ))
+        movies = cursor.fetchall()
+
+        return render_template('search.html', movies=movies)
+    
+    else:
+
+        return render_template('search.html', the_title='Search')
+
+@app.route('/favorite', methods=['GET', 'POST'])
+def favorite():
+    
+    msg=''
+    if request.method == 'POST' and 'favorite-add' in request.form:
+        title = request.form['favorite-add']
+        username = session['username']
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM Favorites WHERE UserID = % s AND Title = % s', (username, title, ))
+        exists = cursor.fetchone()
+
+        if not exists:
+            cursor.execute('INSERT INTO Favorites VALUES (% s, % s, CURDATE())', (username, title, ))
+            mysql.connection.commit()
+            msg = 'Added to favorites!'
+        else:
+            msg = 'You already favorited this movie!'
+
+        return render_template('search.html', msg=msg)
+    elif request.method == 'POST' and 'favorite-remove' in request.form:
+        title = request.form['favorite-remove']
+        username = session['username']
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('DELETE FROM Favorites WHERE UserID = % s AND Title = % s', (username, title, ))
+        mysql.connection.commit()
+
+        msg = 'Removed from favorites!'
+        return render_template('profile.html', msg=msg)
+    else:
+        return redirect('search.html', msg=msg)
 
 @app.route('/recommendations')
 def recommendations():
-    return render_template('recommendations.html', the_title='Recommendations')
 
-@app.route('/results')
-def results():
-    return render_template('results.html', the_title='Search Results')
+    return render_template('recommendations.html')
+
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    if session.get('loggedin'):
+        cursor = mysql.connection.cursor()
+        cursor.execute("""SELECT f.Title AS Title FROM Favorites AS f 
+                        JOIN Users AS u ON u.UserID = f.UserID
+                        WHERE f.UserID = % s""", (session['username'], ))
+        movies = cursor.fetchall()
+
+        return render_template('profile.html', movies=movies)
+    else:
+        return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<section class="hero is-success">
+    <div class="hero-body">
+        <p class="title">
+            User Profile
+        </p>
+        <p class="subtitle">
+            Details about your account.
+        </p>
+    </div>
+</section>
+
+<div class="container mt-4 mb-4">
+    <div class="card">
+        <div class="card-content">
+            <div class="media">
+                <div class="media-left">
+                    <figure class="image is-48x48">
+                        <img class="is-rounded" src="https://i.pravatar.cc/48" alt="Placeholder image">
+                    </figure>
+                </div>
+                <div class="media-content">
+                    <p class="title is-4">{{ session['username'] }}</p>
+                    <p class="subtitle is-6">@{{ session['username'] }}</p>
+                </div>
+            </div>
+
+            <div class="content">
+                <strong>Age:</strong> {{ session['age'] }}
+                <br>
+                <strong>City:</strong> {{ session['city'] }}
+                <br>
+                <strong>Logged in: </strong>{{ session['logged_in_at'] }}
+            </div>
+
+            <div class="content">
+                <h1 class="header is-1">Favorite Movies</h1>
+                {% if movies %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th><abbr title="Favorite">Fave</abbr></th>
+                            <th><abbr title="Title">Title</abbr></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for movie in movies %}
+                        <tr>
+                            <th>
+                                <form method="POST" action="/favorite">
+                                    <input class="button is-hidden" type="input" name="favorite-remove"
+                                        value="{{ movie['Title'] }}">
+                                    <button class="button is-block is-danger is-small">remove</button>
+                                </form>
+                            </th>
+                            <th>{{ movie['Title'] }}</th>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>* You have no favorite movies yet. Try <a href="{{ url_for('search') }}">searching</a> for some.</p>
+                {% endif %}
+            </div>
+
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -7,12 +7,104 @@
             Search
         </p>
         <p class="subtitle">
-            Find your favorite movies by searching below!
+            Find your favorite movies by searching below. Click the star to add to your favorites!
         </p>
     </div>
 </section>
 
 <div class="container mt-4 mb-4">
-// TODO Search 
+    <div class="columns">
+        <!-- Title -->
+        <div class="column is-one-third">
+            <form method="POST" action="/search">
+                <div class="field">
+                    <label class="label">By Title:</label>
+                    <div class="control">
+                        <input class="input" name="search-title" placeholder="title" autofocus="">
+                    </div>
+                </div>
+                <button class="button is-block is-link is-small">search</button>
+            </form>
+        </div>
+
+        <!-- Actor -->
+        <div class="column is-one-third">
+            <form method="POST" action="/search">
+                <div class="field">
+                    <label class="label">By Actor:</label>
+                    <div class="control">
+                        <input class="input" name="search-actor" placeholder="actor" autofocus="">
+                    </div>
+                </div>
+                <button class="button is-block is-primary is-small">search</button>
+            </form>
+        </div>
+
+        <!-- Director -->
+        <div class="column is-one-third">
+            <form method="POST" action="/search">
+                <div class="field">
+                    <label class="label">By Director:</label>
+                    <div class="control">
+                        <input class="input" name="search-director" placeholder="director" autofocus="">
+                    </div>
+                </div>
+                <button class="button is-block is-warning is-small">search</button>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <p class="help is-danger">{{ msg }}</p>
+    </div>
+
+    <!-- Movies Table -->
+    {% if movies %}
+    <!-- <a class="is-danger is-small" href="{{ url_for('search') }}">reset</a> -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th><abbr title="Favorite">Fave</abbr></th>
+                <th><abbr title="Title">Title</abbr></th>
+                <th><abbr title="Released Year">Year</abbr></th>
+                <th><abbr title="IMDB Rating">Rating</abbr></th>
+                <th><abbr title="Runtime">Runtime</abbr></th>
+                <th><abbr title="Certificate">Certificate</abbr></th>
+                <th><abbr title="Director">Director</abbr></th>
+                <th><abbr title="Star Actors">Actors</abbr></th>
+                <th><abbr title="Poster">Poster</abbr></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for movie in movies %}
+            <tr>
+                <th>
+                    <form method="POST" action="/favorite">
+                        <input class="button is-hidden" type="input" name="favorite-add" value="{{ movie['Title'] }}">
+                        <button class="button is-rounded is-light is-small">add</button>
+                    </form>
+                </th>
+                <th>{{ movie['Title'] }}</th>
+                <td>{{ movie['Released_Year'] }}</td>
+                <td>{{ movie['IMDB_Rating'] }}</td>
+                <td>{{ movie['Runtime'] }}</td>
+                <td>{{ movie['Certificate'] }}</td>
+                <td>{{ movie['Director'] }}</td>
+                <td>{{ movie['Star1'] }}, {{ movie['Star2'] }}, {{ movie['Star3'] }}, {{ movie['Star4'] }}</td>
+                <td><img src="{{ movie['Poster_Link']}}"></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    {% if actors %}
+    {% for actor in actors %}
+    <p> {{ actor['Name'] }}</p>
+    {% endfor %}
+    {% endif %}
+
+
 </div>
+
 {% endblock %}
