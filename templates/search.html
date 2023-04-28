@@ -60,6 +60,7 @@
 
     <!-- Movies Table -->
     {% if movies %}
+    <h1 class="title mt-4">Search Results | <a href="{{ url_for('search') }}">Clear</a></h1>
     <!-- <a class="is-danger is-small" href="{{ url_for('search') }}">reset</a> -->
     <table class="table">
         <thead>
@@ -69,9 +70,9 @@
                 <th><abbr title="Released Year">Year</abbr></th>
                 <th><abbr title="IMDB Rating">Rating</abbr></th>
                 <th><abbr title="Runtime">Runtime</abbr></th>
-                <th><abbr title="Certificate">Certificate</abbr></th>
+                <th><abbr title="Certificate">Cert</abbr></th>
                 <th><abbr title="Director">Director</abbr></th>
-                <th><abbr title="Star Actors">Actors</abbr></th>
+                <th><abbr title="Star Actors"> Star Actors</abbr></th>
                 <th><abbr title="Poster">Poster</abbr></th>
             </tr>
         </thead>
@@ -97,13 +98,6 @@
         </tbody>
     </table>
     {% endif %}
-
-    {% if actors %}
-    {% for actor in actors %}
-    <p> {{ actor['Name'] }}</p>
-    {% endfor %}
-    {% endif %}
-
 
 </div>
 

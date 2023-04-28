@@ -67,7 +67,7 @@
                                 Log out
                             </a>
                             <a href="{{ url_for('profile') }}" class="button is-link">
-                                Profile
+                                {{ session['username'] }}
                             </a>
                             {% else %}
                             <a href="{{ url_for('signup') }}" class="button is-link">

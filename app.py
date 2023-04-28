@@ -128,7 +128,7 @@ def search():
         title = request.form['search-title']
 
         cursor = mysql.connection.cursor()
-        cursor.execute('SELECT * FROM Movies WHERE Title = % s', (title, ))
+        cursor.execute('SELECT * FROM Movies WHERE Title LIKE % s', ('%' + title + '%', ))
         movies = cursor.fetchall()
 
         return render_template('search.html', movies=movies)
@@ -137,16 +137,17 @@ def search():
         actor = request.form['search-actor']
 
         cursor = mysql.connection.cursor()
-        cursor.execute('SELECT * FROM Actors WHERE Name = % s', (actor, ))
-        actors = cursor.fetchall()
+        cursor.execute("""SELECT * FROM Movies WHERE Star1 LIKE % s 
+                        OR Star2 LIKE % s OR Star3 LIKE % s OR Star4 LIKE % s """, ('%' + actor + '%', '%' + actor + '%', '%' + actor + '%', '%' + actor + '%', ))
+        movies = cursor.fetchall()
 
-        return render_template('search.html', actors=actors)
+        return render_template('search.html', movies=movies)
     
     elif request.method == 'POST' and 'search-director' in request.form:
         director = request.form['search-director']
 
         cursor = mysql.connection.cursor()
-        cursor.execute('SELECT * FROM Movies WHERE Director = % s', (director, ))
+        cursor.execute('SELECT * FROM Movies WHERE Director LIKE % s', ('%' + director + '%', ))
         movies = cursor.fetchall()
 
         return render_template('search.html', movies=movies)
@@ -190,16 +191,79 @@ def favorite():
 
 @app.route('/recommendations')
 def recommendations():
+    if session.get('loggedin'):
+        cursor = mysql.connection.cursor()
+        cursor.execute("""
+            SELECT m.Title, m.Poster_Link, m.Released_Year, m.IMDB_Rating, m.Runtime, m.Certificate, m.Director, m.Star1, m.Star2, m.Star3, m.Star4, COUNT(f.Title) AS Count
+            FROM Movies AS m
+            JOIN Favorites AS f ON f.Title = m.Title
+            JOIN Users AS u ON f.UserID = u.UserID
+            WHERE u.City = % s
+            GROUP By f.Title
+            ORDER BY COUNT(f.Title) DESC
+            LIMIT 5;
+        """, (session['city'], ))
+        top_city = cursor.fetchall()
 
-    return render_template('recommendations.html')
+
+        upper_age = int(session['age']) + 5
+        lower_age = int(session['age']) - 5
+        cursor.execute("""
+            SELECT m.Title, m.Poster_Link, m.Released_Year, m.IMDB_Rating, m.Runtime, m.Certificate, m.Director, m.Star1, m.Star2, m.Star3, m.Star4, COUNT(f.Title) AS Count
+            FROM Movies AS m
+            JOIN Favorites AS f ON f.Title = m.Title
+            JOIN Users AS u ON u.UserID = f.UserID
+            WHERE u.Age BETWEEN % s AND % s
+            GROUP BY f.Title
+            ORDER BY COUNT(f.Title) DESC
+            LIMIT 5
+        """, (lower_age, upper_age, ))
+        top_age = cursor.fetchall()
+
+        cursor.execute("""
+            SELECT Genre
+            FROM Movies
+            GROUP BY Genre
+            ORDER BY COUNT(Genre) DESC
+            LIMIT 25  
+        """)
+        top_genre = cursor.fetchall()
+      
+        cursor.execute("""
+            SELECT m.Title, m.Poster_Link, m.Released_Year, m.IMDB_Rating, m.Runtime, m.Certificate, m.Director, m.Gross
+            FROM Movies AS m
+            GROUP BY m.Title
+            ORDER BY MAX(m.Gross) DESC
+            LIMIT 10
+        """)
+        top_grossing = cursor.fetchall()
+
+        cursor.execute("""
+            SELECT a.Name, COUNT(a.Name) AS Favorited FROM Actors AS a
+            JOIN Favorites AS f ON f.Title = a.Title
+            WHERE a.Name IN (SELECT m.Star1 FROM Movies AS m JOIN Favorites AS f ON f.Title = m.Title) 
+            OR a.Name IN (SELECT m.Star2 FROM Movies AS m JOIN Favorites AS f ON f.Title = m.Title)
+            OR a.Name IN (SELECT m.Star3 FROM Movies AS m JOIN Favorites AS f ON f.Title = m.Title)
+            OR a.Name IN (SELECT m.Star4 FROM Movies AS m JOIN Favorites AS f ON f.Title = m.Title)
+            GROUP BY a.Name
+            ORDER BY COUNT(a.Name) DESC
+            LIMIT 100
+        """)
+        top_actors = cursor.fetchall()
+
+        return render_template('recommendations.html', top_city=top_city, top_age=top_age, top_genre=top_genre, top_grossing=top_grossing, top_actors=top_actors)
+    else:
+        return redirect(url_for('login'))
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
     if session.get('loggedin'):
         cursor = mysql.connection.cursor()
-        cursor.execute("""SELECT f.Title AS Title FROM Favorites AS f 
-                        JOIN Users AS u ON u.UserID = f.UserID
-                        WHERE f.UserID = % s""", (session['username'], ))
+        cursor.execute("""
+            SELECT f.Title AS Title FROM Favorites AS f 
+            JOIN Users AS u ON u.UserID = f.UserID
+            WHERE f.UserID = % s
+        """, (session['username'], ))
         movies = cursor.fetchall()
 
         return render_template('profile.html', movies=movies)
