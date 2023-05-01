@@ -15,7 +15,7 @@
 <div class="container mt-4 mb-4">
     <div class="columns">
         <!-- Title -->
-        <div class="column is-one-third">
+        <div class="column is-one-quarter">
             <form method="POST" action="/search">
                 <div class="field">
                     <label class="label">By Title:</label>
@@ -28,7 +28,7 @@
         </div>
 
         <!-- Actor -->
-        <div class="column is-one-third">
+        <div class="column is-one-quarter">
             <form method="POST" action="/search">
                 <div class="field">
                     <label class="label">By Actor:</label>
@@ -41,7 +41,7 @@
         </div>
 
         <!-- Director -->
-        <div class="column is-one-third">
+        <div class="column is-one-quarter">
             <form method="POST" action="/search">
                 <div class="field">
                     <label class="label">By Director:</label>
@@ -50,6 +50,25 @@
                     </div>
                 </div>
                 <button class="button is-block is-warning is-small">search</button>
+            </form>
+        </div>
+
+        <!-- Genre -->
+        <div class="column is-one-quarter">
+            <form method="POST" action="/search">
+                <div class="field">
+                    <label class="label">By Genre:</label>
+                    <div class="control">
+                        <div class="select">
+                            <select name="search-genre">
+                                {% for genre in genres %}
+                                <option value="{{ genre['Genre'] }}">{{ genre['Genre'] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button class="button is-block is-danger is-small">search</button>
             </form>
         </div>
     </div>
@@ -82,7 +101,7 @@
                 <th>
                     <form method="POST" action="/favorite">
                         <input class="button is-hidden" type="input" name="favorite-add" value="{{ movie['Title'] }}">
-                        <button class="button is-rounded is-light is-small">add</button>
+                        <button class="button is-rounded is-success is-small">add</button>
                     </form>
                 </th>
                 <th>{{ movie['Title'] }}</th>

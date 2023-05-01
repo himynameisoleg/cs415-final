@@ -118,12 +118,14 @@ def about():
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-    # search by movie, actor, gener
-    # filers: top grossing, length
-    # display all faves 
-    # distinct genres
-
     msg = ''
+
+    # get list of genres
+    cursor = mysql.connection.cursor()
+    cursor.execute('SELECT DISTINCT Genre FROM Movies ORDER BY Genre ASC')
+    genres = cursor.fetchall()
+
+    # process request by input type
     if request.method == 'POST' and 'search-title' in request.form:
         title = request.form['search-title']
 
@@ -131,7 +133,10 @@ def search():
         cursor.execute('SELECT * FROM Movies WHERE Title LIKE % s', ('%' + title + '%', ))
         movies = cursor.fetchall()
 
-        return render_template('search.html', movies=movies)
+        if not movies:
+            msg = 'No movies found!'
+
+        return render_template('search.html', msg=msg, genres=genres, movies=movies)
     
     elif request.method == 'POST' and 'search-actor' in request.form:
         actor = request.form['search-actor']
@@ -141,7 +146,22 @@ def search():
                         OR Star2 LIKE % s OR Star3 LIKE % s OR Star4 LIKE % s """, ('%' + actor + '%', '%' + actor + '%', '%' + actor + '%', '%' + actor + '%', ))
         movies = cursor.fetchall()
 
-        return render_template('search.html', movies=movies)
+        if not movies:
+            msg = 'No movies found!'
+
+        return render_template('search.html', msg=msg, genres=genres, movies=movies)
+
+    elif request.method == 'POST' and 'search-genre' in request.form:
+        genre = request.form['search-genre']
+
+        cursor = mysql.connection.cursor()
+        cursor.execute("""SELECT * FROM Movies WHERE Genre LIKE % s LIMIT 100""", ('%' + genre + '%', ))
+        movies = cursor.fetchall()
+
+        if not movies:
+            msg = 'No movies found!'
+
+        return render_template('search.html', msg=msg, genres=genres, movies=movies)
     
     elif request.method == 'POST' and 'search-director' in request.form:
         director = request.form['search-director']
@@ -150,11 +170,14 @@ def search():
         cursor.execute('SELECT * FROM Movies WHERE Director LIKE % s', ('%' + director + '%', ))
         movies = cursor.fetchall()
 
-        return render_template('search.html', movies=movies)
+        if not movies:
+            msg = 'No movies found!'
+
+        return render_template('search.html', msg=msg, genres=genres, movies=movies)
     
     else:
 
-        return render_template('search.html', the_title='Search')
+        return render_template('search.html', msg=msg, genres=genres, the_title='Search')
 
 @app.route('/favorite', methods=['GET', 'POST'])
 def favorite():
