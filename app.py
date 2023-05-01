@@ -30,7 +30,7 @@ def index():
 
         return render_template('index.html', movies=movies, the_title='Welcome')
     else:
-        return redirect(url_for('login'))
+        return redirect(url_for('signup'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -203,7 +203,7 @@ def recommendations():
             ORDER BY COUNT(f.Title) DESC
             LIMIT 5;
         """, (session['city'], ))
-        top_city = cursor.fetchall()
+        top_your_city = cursor.fetchall()
 
 
         upper_age = int(session['age']) + 5
@@ -251,7 +251,12 @@ def recommendations():
         """)
         top_actors = cursor.fetchall()
 
-        return render_template('recommendations.html', top_city=top_city, top_age=top_age, top_genre=top_genre, top_grossing=top_grossing, top_actors=top_actors)
+        cursor.execute("""
+            SELECT * FROM Movies AS m LIMIT 10 
+        """)
+        top_by_city = cursor.fetchall()
+
+        return render_template('recommendations.html', top_your_city=top_your_city, top_age=top_age, top_genre=top_genre, top_grossing=top_grossing, top_actors=top_actors, top_by_city=top_by_city)
     else:
         return redirect(url_for('login'))
 
@@ -260,7 +265,7 @@ def profile():
     if session.get('loggedin'):
         cursor = mysql.connection.cursor()
         cursor.execute("""
-            SELECT f.Title AS Title FROM Favorites AS f 
+            SELECT f.Title, f.Date_Added FROM Favorites AS f 
             JOIN Users AS u ON u.UserID = f.UserID
             WHERE f.UserID = % s
         """, (session['username'], ))

@@ -25,6 +25,12 @@ ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
 
+LOAD DATA LOCAL INFILE  '/Users/op/code/cs415-final/sql/datasets/favorites.csv'
+INTO TABLE Actors
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
 
 
 

@@ -41,13 +41,17 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th><abbr title="Favorite">Fave</abbr></th>
                             <th><abbr title="Title">Title</abbr></th>
+                            <th><abbr title="Date Added">Date Added</abbr></th>
+                            <th><abbr title="Favorite">Fave</abbr></th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for movie in movies %}
                         <tr>
+
+                            <td>{{ movie['Title'] }}</th>
+                            <td>{{ movie['Date_Added'] }}</th>
                             <th>
                                 <form method="POST" action="/favorite">
                                     <input class="button is-hidden" type="input" name="favorite-remove"
@@ -55,7 +59,6 @@
                                     <button class="button is-block is-danger is-small">remove</button>
                                 </form>
                             </th>
-                            <th>{{ movie['Title'] }}</th>
                         </tr>
                         {% endfor %}
                     </tbody>
