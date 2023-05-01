@@ -195,18 +195,20 @@
     <div class="card">
         <div class="card-content">
             <div class="content">
-                <h1 class="header is-1">Top Movies by City (TODO):</h1>
+                <h1 class="header is-1">Where Movies are Trending:</h1>
                 {% if top_by_city %}
                 <table class="table">
                     <thead>
                         <tr>
                             <th><abbr title="Title">Title</abbr></th>
-                            <th><abbr title="Favorited">Favorited</abbr></th>
-                            <th><abbr title="Released Year">Year</abbr></th>
+                            <th><abbr title="City">City</abbr></th>
+                            <th><abbr title="Favorited by this many users">Count</abbr></th>
+                            <!-- <th><abbr title="Favorited">Favorited</abbr></th> -->
+                            <!-- <th><abbr title="Released Year">Year</abbr></th>
                             <th><abbr title="IMDB Rating">Rating</abbr></th>
                             <th><abbr title="Runtime">Runtime</abbr></th>
                             <th><abbr title="Certificate">Cert</abbr></th>
-                            <th><abbr title="Director">Director</abbr></th>
+                            <th><abbr title="Director">Director</abbr></th> -->
                             <!-- <th><abbr title="Star Actors"> Star Actors</abbr></th> -->
                             <!-- <th><abbr title="Poster">Poster</abbr></th> -->
                         </tr>
@@ -215,12 +217,13 @@
                         {% for movie in top_by_city %}
                         <tr>
                             <th>{{ movie['Title'] }}</th>
+                            <td>{{ movie['City'] }}</td>
                             <td>{{ movie['Count'] }}</td>
-                            <td>{{ movie['Released_Year'] }}</td>
+                            <!-- <td>{{ movie['Released_Year'] }}</td>
                             <td>{{ movie['IMDB_Rating'] }}</td>
                             <td>{{ movie['Runtime'] }}</td>
                             <td>{{ movie['Certificate'] }}</td>
-                            <td>{{ movie['Director'] }}</td>
+                            <td>{{ movie['Director'] }}</td> -->
                             <!-- <td>{{ movie['Star1'] }}, {{ movie['Star2'] }}, {{ movie['Star3'] }}, {{ movie['Star4'] }}</td> -->
                             <!-- <td><figure class="image is-12x17"><img src="{{ movie['Poster_Link']}}"></figure></td> -->
                         </tr>

@@ -270,12 +270,16 @@ def recommendations():
             OR a.Name IN (SELECT m.Star4 FROM Movies AS m JOIN Favorites AS f ON f.Title = m.Title)
             GROUP BY a.Name
             ORDER BY COUNT(a.Name) DESC
-            LIMIT 100
+            LIMIT 25
         """)
         top_actors = cursor.fetchall()
 
         cursor.execute("""
-            SELECT * FROM Movies AS m LIMIT 10 
+            SELECT f.Title, u.City, COUNT(*) AS Count FROM Favorites AS f
+            JOIN Users AS u ON f.UserID = u.UserID
+            GROUP BY f.Title, u.City
+            ORDER BY Count DESC 
+            LIMIT 5
         """)
         top_by_city = cursor.fetchall()
 
