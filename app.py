@@ -37,10 +37,9 @@ def index():
 def login():
     msg = ''
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
+        # get user info from database and set to session variables
         username = request.form['username']
         password = request.form['password']
-
-        # get user info from database and set to session variables
         cursor = mysql.connection.cursor()
         cursor.execute('SELECT * FROM Users WHERE UserID = %s AND Password = %s', (username, password,))
         account = cursor.fetchone()
@@ -121,15 +120,16 @@ def about():
 def search():
     msg = ''
 
-    cursor = mysql.connection.cursor()
+
     # get list of genres for dropdown menu
+    cursor = mysql.connection.cursor()
     cursor.execute('SELECT DISTINCT Genre FROM Movies ORDER BY Genre ASC')
     genres = cursor.fetchall()
 
     # process request by input type
     if request.method == 'POST' and 'search-title' in request.form:
+        # search by movie title
         title = request.form['search-title']
-
         cursor = mysql.connection.cursor()
         cursor.execute('SELECT * FROM Movies WHERE Title LIKE % s', ('%' + title + '%', ))
         movies = cursor.fetchall()
@@ -140,8 +140,8 @@ def search():
         return render_template('search.html', msg=msg, genres=genres, movies=movies)
     
     elif request.method == 'POST' and 'search-actor' in request.form:
+        # search movie by actor
         actor = request.form['search-actor']
-
         cursor = mysql.connection.cursor()
         cursor.execute("""SELECT * FROM Movies WHERE Star1 LIKE % s 
                         OR Star2 LIKE % s OR Star3 LIKE % s OR Star4 LIKE % s """, ('%' + actor + '%', '%' + actor + '%', '%' + actor + '%', '%' + actor + '%', ))
@@ -153,8 +153,8 @@ def search():
         return render_template('search.html', msg=msg, genres=genres, movies=movies)
 
     elif request.method == 'POST' and 'search-genre' in request.form:
+        # search movie by genre
         genre = request.form['search-genre']
-
         cursor = mysql.connection.cursor()
         cursor.execute("""SELECT * FROM Movies WHERE Genre LIKE % s LIMIT 100""", ('%' + genre + '%', ))
         movies = cursor.fetchall()
@@ -165,8 +165,8 @@ def search():
         return render_template('search.html', msg=msg, genres=genres, movies=movies)
     
     elif request.method == 'POST' and 'search-director' in request.form:
+        # search movie by director
         director = request.form['search-director']
-
         cursor = mysql.connection.cursor()
         cursor.execute('SELECT * FROM Movies WHERE Director LIKE % s', ('%' + director + '%', ))
         movies = cursor.fetchall()
@@ -184,10 +184,9 @@ def search():
 def favorite():
     msg=''
     if request.method == 'POST' and 'favorite-add' in request.form:
+        # check if movie is already favorited
         title = request.form['favorite-add']
         username = session['username']
-
-        # check if movie is already favorited
         cursor = mysql.connection.cursor()
         cursor.execute('SELECT * FROM Favorites WHERE UserID = % s AND Title = % s', (username, title, ))
         exists = cursor.fetchone()
@@ -202,9 +201,9 @@ def favorite():
 
         return render_template('search.html', msg=msg)
     elif request.method == 'POST' and 'favorite-remove' in request.form:
+        # remove favorite from DB
         title = request.form['favorite-remove']
         username = session['username']
-
         cursor = mysql.connection.cursor()
         cursor.execute('DELETE FROM Favorites WHERE UserID = % s AND Title = % s', (username, title, ))
         mysql.connection.commit()
