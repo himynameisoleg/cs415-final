@@ -24,6 +24,7 @@ mysql = MySQL(app)
 @app.route('/index')
 def index():
     if session.get('loggedin'):
+        # top movies by IMDB rating
         cursor = mysql.connection.cursor()
         cursor.execute('SELECT * FROM Movies ORDER BY IMDB_Rating DESC LIMIT 9')
         movies = cursor.fetchall()
@@ -36,14 +37,12 @@ def index():
 def login():
     msg = ''
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
-        # # Create variables for easy access
         username = request.form['username']
         password = request.form['password']
 
+        # get user info from database and set to session variables
         cursor = mysql.connection.cursor()
-
         cursor.execute('SELECT * FROM Users WHERE UserID = %s AND Password = %s', (username, password,))
-        # Fetch one record and return result
         account = cursor.fetchone()
 
         # If account exists in accounts table in out database
@@ -82,6 +81,7 @@ def signup():
         age = request.form['age']
         city = request.form['city']
 
+        # first check if UserID already exists in DB
         cursor = mysql.connection.cursor()
         cursor.execute('SELECT * FROM Users WHERE UserID = % s', (username, ))
         account = cursor.fetchone()
@@ -96,6 +96,7 @@ def signup():
         elif not username or not password or not age or not city:
             msg = 'Please fill out the form !'
         else:
+            # insert new value for user once validated
             cursor.execute('INSERT INTO Users VALUES (% s, % s, % s, % s)', (username, password, age, city, ))
             mysql.connection.commit()
 
@@ -120,8 +121,8 @@ def about():
 def search():
     msg = ''
 
-    # get list of genres
     cursor = mysql.connection.cursor()
+    # get list of genres for dropdown menu
     cursor.execute('SELECT DISTINCT Genre FROM Movies ORDER BY Genre ASC')
     genres = cursor.fetchall()
 
@@ -181,17 +182,18 @@ def search():
 
 @app.route('/favorite', methods=['GET', 'POST'])
 def favorite():
-    
     msg=''
     if request.method == 'POST' and 'favorite-add' in request.form:
         title = request.form['favorite-add']
         username = session['username']
 
+        # check if movie is already favorited
         cursor = mysql.connection.cursor()
         cursor.execute('SELECT * FROM Favorites WHERE UserID = % s AND Title = % s', (username, title, ))
         exists = cursor.fetchone()
 
         if not exists:
+            # insert new favorite into DB
             cursor.execute('INSERT INTO Favorites VALUES (% s, % s, CURDATE())', (username, title, ))
             mysql.connection.commit()
             msg = 'Added to favorites!'
@@ -215,6 +217,7 @@ def favorite():
 @app.route('/recommendations')
 def recommendations():
     if session.get('loggedin'):
+        # get top 5 favorited movies in your city
         cursor = mysql.connection.cursor()
         cursor.execute("""
             SELECT m.Title, m.Poster_Link, m.Released_Year, m.IMDB_Rating, m.Runtime, m.Certificate, m.Director, m.Star1, m.Star2, m.Star3, m.Star4, COUNT(f.Title) AS Count
@@ -229,6 +232,7 @@ def recommendations():
         top_your_city = cursor.fetchall()
 
 
+        # get top 5 favorited movies in your age group
         upper_age = int(session['age']) + 5
         lower_age = int(session['age']) - 5
         cursor.execute("""
@@ -243,6 +247,8 @@ def recommendations():
         """, (lower_age, upper_age, ))
         top_age = cursor.fetchall()
 
+
+        # get top 25 genres from Movies table
         cursor.execute("""
             SELECT Genre
             FROM Movies
@@ -251,7 +257,9 @@ def recommendations():
             LIMIT 25  
         """)
         top_genre = cursor.fetchall()
-      
+
+
+        # get top 10 grossing movies
         cursor.execute("""
             SELECT m.Title, m.Poster_Link, m.Released_Year, m.IMDB_Rating, m.Runtime, m.Certificate, m.Director, m.Gross
             FROM Movies AS m
@@ -261,6 +269,8 @@ def recommendations():
         """)
         top_grossing = cursor.fetchall()
 
+
+        # get top 25 actors based on movies favorited by users
         cursor.execute("""
             SELECT a.Name, COUNT(a.Name) AS Favorited FROM Actors AS a
             JOIN Favorites AS f ON f.Title = a.Title
@@ -274,6 +284,8 @@ def recommendations():
         """)
         top_actors = cursor.fetchall()
 
+
+        # get top 5 favorited movies in each city
         cursor.execute("""
             SELECT f.Title, u.City, COUNT(*) AS Count FROM Favorites AS f
             JOIN Users AS u ON f.UserID = u.UserID
@@ -290,6 +302,7 @@ def recommendations():
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
     if session.get('loggedin'):
+        # get all favorited movies by user
         cursor = mysql.connection.cursor()
         cursor.execute("""
             SELECT f.Title, f.Date_Added FROM Favorites AS f 
